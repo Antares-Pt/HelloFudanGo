@@ -1,4 +1,4 @@
-module DailyFudanGo
+module HelloFudanGo
 
 go 1.14
 
