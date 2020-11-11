@@ -18,8 +18,8 @@ type Student struct {
 	Password  string
 }
 
-// DailyFudan struct
-type DailyFudan struct {
+// HelloFudan struct
+type HelloFudan struct {
 	client *http.Client
 	stu    Student
 }
@@ -28,19 +28,19 @@ func main() {
 
 }
 
-// NewDailyFudan is DailyFudan Constructor
-func NewDailyFudan(stu Student) *DailyFudan {
-	return &DailyFudan{
+// NewHelloFudan is HelloFudan Constructor
+func NewHelloFudan(stu Student) *HelloFudan {
+	return &HelloFudan{
 		client: &http.Client{},
 		stu:    stu,
 	}
 }
 
-// Login DailyFudan
-func (df *DailyFudan) Login() {
+// Login HelloFudan
+func (hf *HelloFudan) Login() {
 	data := url.Values{
-		"username": {df.stu.StudentID},
-		"password": {df.stu.Password},
+		"username": {hf.stu.StudentID},
+		"password": {hf.stu.Password},
 		"service":  {dailyFudanURL},
 	}
 	body := strings.NewReader(data.Encode())
@@ -55,20 +55,20 @@ func (df *DailyFudan) Login() {
 	req.Header.Set("Referer", loginURL)
 	req.Header.Set("User-Agent", userAgent)
 
-	resp, err := df.client.Do(req)
+	resp, err := hf.client.Do(req)
 	if err != nil {
 		panic(err)
 	}
 
-	cookie := resp.Cookies()
+	hf.client.Jar.SetCookies("uis.fudan.edu.cn", resp.Cookies())
 }
 
-// Logout DailyFudan
-func (df *DailyFudan) Logout() {
+// Logout HelloFudan
+func (hf *HelloFudan) Logout() {
 
 }
 
-// Check DailyFudan status
-func (df *DailyFudan) Check() {
+// Check HelloFudan status
+func (hf *HelloFudan) Check() {
 
 }
