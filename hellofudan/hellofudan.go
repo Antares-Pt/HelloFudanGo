@@ -49,7 +49,7 @@ func newHelloFudan(student Student) *HelloFudan {
 			Timeout: 5 * time.Second,
 			Jar:     jar,
 			CheckRedirect: func(req *http.Request, via []*http.Request) error {
-				if req.URL.Host == loginRedirectURL {
+				if strings.Compare(req.URL.String(), loginRedirectURL) == 0 {
 					return http.ErrUseLastResponse
 				}
 				return nil
@@ -112,9 +112,8 @@ func (hf *HelloFudan) login() {
 		hf.log.Println("Login success")
 	} else {
 		hf.log.Printf("Login failed, Status: %s, Please check your account", resp.Status)
-		return
+		panic("Login failed")
 	}
-
 }
 
 func (hf *HelloFudan) logout() {
