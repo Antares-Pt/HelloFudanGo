@@ -1,4 +1,4 @@
-module HelloFudanGo
+module hellofudango
 
 go 1.14
 
