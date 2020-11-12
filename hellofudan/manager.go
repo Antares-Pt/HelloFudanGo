@@ -43,7 +43,7 @@ func (m *Manager) start(stu Student) {
 	hf := newHelloFudan(stu)
 
 	hf.login()
-	if hf.checkStatus() == false {
+	if !hf.checkStatus() {
 		hf.checkIn()
 	}
 	hf.logout()

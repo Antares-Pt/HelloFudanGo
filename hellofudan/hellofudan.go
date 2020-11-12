@@ -127,6 +127,7 @@ func (hf *HelloFudan) logout() {
 		hf.log.Println("Logout success")
 	} else {
 		hf.log.Println("Logout failed")
+		panic("Logout failed")
 	}
 }
 
@@ -143,13 +144,14 @@ func (hf *HelloFudan) checkStatus() bool {
 
 	var v interface{}
 	json.Unmarshal(body, &v)
-	data := v.(map[string]map[string]map[string]interface{})
+	data := v.(map[string]interface{})
+	info := data["d"].(map[string]interface{})["info"].(map[string]interface{})
 
-	hf.info = data["d"]["info"]
-	date := data["d"]["info"]["date"].(string)
-	address := data["d"]["info"]["address"].(string)
+	hf.info = info
+	date := info["date"].(string)
+	address := info["address"].(string)
 
-	hf.log.Printf("Last check in position: %s", address)
+	hf.log.Printf("Last check in position: %s，date: %s", address, date)
 
 	cstSH, _ := time.LoadLocation("Asia/Shanghai")
 	today := time.Now().In(cstSH).Format("20160102")
@@ -166,12 +168,16 @@ func (hf *HelloFudan) checkStatus() bool {
 func (hf *HelloFudan) checkIn() {
 	hf.log.Println("Start check in")
 
-	var province, city, district string
+	geoInfo := make(map[string]interface{})
+	json.Unmarshal(hf.info["geo_api_info"].([]byte), &geoInfo)
+	addr := geoInfo["addressComponent"].(map[string]interface{})
 
 	hf.info["tw"] = "13"
-	hf.info["province"] = province
-	hf.info["city"] = city
-	hf.info["area"] = strings.Join([]string{province, city, district}, " ")
+	hf.info["province"] = addr["province"]
+	hf.info["city"] = addr["city"]
+	hf.info["area"] = strings.Join([]string{addr["province"].(string), addr["city"].(string), addr["district"].(string)}, " ")
+
+	hf.log.Printf("Check in position: %s", hf.info["area"])
 
 	data, err := json.Marshal(hf.info)
 	if err != nil {

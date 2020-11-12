@@ -5,12 +5,12 @@ import (
 )
 
 func main() {
-	hf := hellofudan.NewManager([]hellofudan.Student{
+	hfm := hellofudan.NewManager([]hellofudan.Student{
 		{
 			StudentID: "",
 			Password:  "",
 		},
 	})
 
-	hf.Start()
+	hfm.Start()
 }
