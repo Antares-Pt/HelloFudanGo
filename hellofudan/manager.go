@@ -22,7 +22,7 @@ func NewManager(students []Student) *Manager {
 // Start Manager
 func (m *Manager) Start() {
 	helloFudan := `
-	_   _      _ _         _____          _
+	 _   _      _ _         _____          _
 	| | | | ___| | | ___   |  ___|   _  __| | __ _ _ __
 	| |_| |/ _ \ | |/ _ \  | |_ | | | |/ _  |/ _  |  _ \
 	|  _  |  __/ | | (_) | |  _|| |_| | (_| | (_| | | | |
@@ -30,6 +30,7 @@ func (m *Manager) Start() {
 	`
 	log.Println(helloFudan)
 	for _, stu := range m.stuList {
+		m.wg.Add(1)
 		go m.start(stu)
 	}
 
@@ -37,7 +38,7 @@ func (m *Manager) Start() {
 }
 
 func (m *Manager) start(stu Student) {
-	m.wg.Add(1)
+
 	defer m.wg.Done()
 
 	hf := newHelloFudan(stu)
@@ -47,4 +48,5 @@ func (m *Manager) start(stu Student) {
 		hf.checkIn()
 	}
 	hf.logout()
+
 }

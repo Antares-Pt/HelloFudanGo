@@ -17,11 +17,12 @@ import (
 )
 
 const (
-	loginURL      = "https://uis.fudan.edu.cn/authserver/login"
-	logoutURL     = "https://uis.fudan.edu.cn/authserver/logout?service=/authserver/login"
-	dailyFudanURL = "https://zlapp.fudan.edu.cn/site/ncov/fudanDaily"
-	checkURL      = "https://zlapp.fudan.edu.cn/ncov/wap/fudan/get-info"
-	userAgent     = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36 Edg/86.0.622.63"
+	loginURL         = "https://uis.fudan.edu.cn/authserver/login"
+	loginRedirectURL = "http://uis.fudan.edu.cn/authserver/index.do"
+	logoutURL        = "https://uis.fudan.edu.cn/authserver/logout?service=/authserver/login"
+	dailyFudanURL    = "https://zlapp.fudan.edu.cn/site/ncov/fudanDaily"
+	checkURL         = "https://zlapp.fudan.edu.cn/ncov/wap/fudan/get-info"
+	userAgent        = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36 Edg/86.0.622.63"
 )
 
 // Student struct
@@ -48,7 +49,10 @@ func newHelloFudan(student Student) *HelloFudan {
 			Timeout: 5 * time.Second,
 			Jar:     jar,
 			CheckRedirect: func(req *http.Request, via []*http.Request) error {
-				return http.ErrUseLastResponse
+				if req.URL.Host == loginRedirectURL {
+					return http.ErrUseLastResponse
+				}
+				return nil
 			},
 		},
 	}
@@ -142,10 +146,13 @@ func (hf *HelloFudan) checkStatus() bool {
 
 	body, _ := ioutil.ReadAll(resp.Body)
 
+	if len(body) == 0 {
+		panic("Check body is nil")
+	}
+
 	var v interface{}
 	json.Unmarshal(body, &v)
-	data := v.(map[string]interface{})
-	info := data["d"].(map[string]interface{})["info"].(map[string]interface{})
+	info := v.(map[string]interface{})["d"].(map[string]interface{})["info"].(map[string]interface{})
 
 	hf.info = info
 	date := info["date"].(string)
@@ -154,11 +161,12 @@ func (hf *HelloFudan) checkStatus() bool {
 	hf.log.Printf("Last check in position: %s，date: %s", address, date)
 
 	cstSH, _ := time.LoadLocation("Asia/Shanghai")
-	today := time.Now().In(cstSH).Format("20160102")
+	// cstE8 := time.FixedZone("CST", 8*3600)
+	today := time.Now().In(cstSH).Format("20060102")
 
 	hf.log.Printf("Today is %s", today)
 	if strings.Compare(date, today) == 0 {
-		log.Println("Today already check in")
+		hf.log.Println("Today already checked in")
 		return true
 	}
 
