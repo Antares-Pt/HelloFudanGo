@@ -192,18 +192,18 @@ func (hf *HelloFudan) checkIn() {
 	if !has {
 		district = ""
 	}
+	area := strings.Join([]string{province, city, district}, " ")
+	hf.log.Printf("Check in position: %s", area)
 
-	hf.info["tw"] = "13"
-	hf.info["province"] = province
-	hf.info["city"] = city
-	hf.info["area"] = strings.Join([]string{province, city, district}, " ")
-
-	hf.log.Printf("Check in position: %s", hf.info["area"])
-
-	// need to convert map[string]interface{} to url.Values
-	data := url.Values{}
+	data := url.Values{
+		"tw":       {"13"},
+		"province": {province},
+		"city":     {city},
+		"area":     {area},
+	}
+	// convert map[string]interface{} to url.Values
 	for k, v := range hf.info {
-		data.Add(k, v)
+		data.Add(k, fmt.Sprint(v))
 	}
 
 	body := strings.NewReader(data.Encode())
