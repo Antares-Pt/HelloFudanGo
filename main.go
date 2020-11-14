@@ -19,9 +19,8 @@ func main() {
 		stuList = append(stuList, inputAccount())
 	}
 
-	// hfm := hellofudan.NewManager(stuList)
-	// hfm.Start()
-	fmt.Println(stuList)
+	hfm := hellofudan.NewManager(stuList)
+	hfm.Start()
 }
 
 func readStudentAccounts() (stuList []hellofudan.Student) {
@@ -74,11 +73,11 @@ func inputAccount() hellofudan.Student {
 	defer fd.Close()
 
 	wd := bufio.NewWriter(fd)
-	defer func () {
+	defer func() {
 		wd.Flush()
 		fmt.Println("Account has been saved in accounts.txt, PLEASE KEEP IT SAFE.")
 		fmt.Println("You can also add other people's account information in the same format by appending it to the file.")
-	}
+	}()
 
 	_, err = wd.WriteString(fmt.Sprintf("%s %s\n", account, password))
 	if err != nil {
