@@ -192,7 +192,13 @@ func (hf *HelloFudan) checkIn() {
 	if !has {
 		district = ""
 	}
-	area := strings.Join([]string{province, city, district}, " ")
+	locArr := []string{province, city, district}
+	for i, loc := range locArr {
+		if len(loc) == 0 {
+			locArr = append(locArr[:i], locArr[i+1:]...)
+		}
+	}
+	area := strings.Join(locArr, " ")
 	hf.log.Printf("Check in position: %s", area)
 
 	data := url.Values{
