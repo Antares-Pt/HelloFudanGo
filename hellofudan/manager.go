@@ -35,6 +35,7 @@ func (m *Manager) Start() {
 	}
 
 	m.wg.Wait()
+	log.Printf("See you next time!")
 }
 
 func (m *Manager) start(stu Student) {
