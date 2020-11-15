@@ -25,3 +25,4 @@
 
 * **If you find any mistakes in code, issues or pull request is always WELCOME!**
 
+* **脚本有风险，打卡须谨慎**
